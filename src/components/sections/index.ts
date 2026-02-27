@@ -1,0 +1,13 @@
+export { default as Hero } from "./Hero";
+export { default as About } from "./About";
+export { default as InstitutionBuilder } from "./InstitutionBuilder";
+export { default as Timeline } from "./Timeline";
+export { default as GlobalMap } from "./GlobalMap";
+export { default as Innovations } from "./Innovations";
+export { default as Research } from "./Research";
+export { default as Patents } from "./Patents";
+export { default as Conferences } from "./Conferences";
+export { default as Testimonials } from "./Testimonials";
+export { default as Awards } from "./Awards";
+export { default as Gallery } from "./Gallery";
+export { default as Contact } from "./Contact";
