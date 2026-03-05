@@ -14,7 +14,7 @@ export const roles = [
 
 export const stats = [
   { value: "27", label: "Global Campuses" },
-  { value: "49", label: "H-Index (Stanford Top 2%)" },
+  { value: "40", label: "H-Index (Stanford Top 2%)" },
   { value: "20,000+", label: "INBUSH Summit Attendees" },
   { value: "6,000+", label: "Research Citations" },
 ];
