@@ -282,6 +282,30 @@ export const timeline = [
         title: "Amity Mauritius Campus",
         description:
           "2014—Launched campus in Mauritius, creating an African gateway for Amity's global network.",
+        highlight: true,
+      },
+      {
+        title: "Amity New York Campus",
+        description:
+          "Established Amity campus in New York, bringing the educational framework to the United States.",
+        highlight: true,
+      },
+      {
+        title: "Amity San Francisco Campus",
+        description:
+          "Strengthened presence in the US and the global innovation hub with the Amity San Francisco campus.",
+      },
+      {
+        title: "Amity University Tashkent",
+        description:
+          "Launched Amity University in Tashkent, Uzbekistan, expanding the educational footprint into Central Asia.",
+        highlight: true,
+      },
+      {
+        title: "Pan African e-Network Project",
+        description:
+          "Achieved widespread Pan African presence across 42 African countries through the groundbreaking Pan African e-Network project.",
+        highlight: true,
       },
     ],
   },
@@ -687,29 +711,29 @@ export const books = [
 
 export const galleryImages = [
   {
-    src: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800",
-    alt: "International Conference",
-    caption: "Keynote at Global Education Summit",
+    src: "/andrew-photo.png",
+    alt: "Meeting with international academic collaborator",
+    caption: "International engagement and strategic dialogue",
   },
   {
-    src: "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800",
-    alt: "Speaking Event",
-    caption: "Addressing students on Nation Building",
+    src: "/datar-photo.png",
+    alt: "Academic delegation recognition ceremony",
+    caption: "Celebrating global institutional partnership with Dr. Dattar, Dean, Harvard Business School",
   },
   {
-    src: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=800",
-    alt: "Graduation Ceremony",
-    caption: "Amity Convocation Ceremony",
+    src: "/monash-univ-photo.png",
+    alt: "Group photo with faculty and collaborators",
+    caption: "Collaborative sessions with visiting scholars at Monash University",
   },
   {
-    src: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800",
-    alt: "Business Meeting",
-    caption: "Strategic Partnership Signing",
+    src: "/queen-mary-univ-photo.png",
+    alt: "Certificate presentation with university partner",
+    caption: "Recognizing excellence in international academic leadership with queen mary unviersity of london",
   },
   {
-    src: "https://images.unsplash.com/photo-1559223607-a43c990c692c?w=800",
-    alt: "University Campus",
-    caption: "Amity University Global Campus",
+    src: "/raghu-photo.png",
+    alt: "Leadership handshake in formal meeting",
+    caption: "Strengthening global collaboration through leadership dialogues with Dr. Raghu Sundaram, Snr. Vice Chancellor at New york University",
   },
 ];
 

@@ -31,7 +31,7 @@ export default function Home() {
         <GlobalMap />
         <Research />
         <Patents />
-        {/* <Testimonials /> */}
+        <Testimonials />
         <Awards />
         <Gallery />
         <Contact />

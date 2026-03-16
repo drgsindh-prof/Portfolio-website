@@ -34,8 +34,8 @@ const videoContent = [
     id: "1",
     title: "The Global Competitiveness of Indian Youth",
     tagline: "Global Skills for Local Heroes",
-    thumbnail:
-      "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&h=340&fit=crop",
+    thumbnail: "/andrew-photo.png",
+    videoSrc: "/video-1.mp4",
     description:
       "Dr. Singh discussing why Indian students must understand German engineering and Google's culture to compete globally.",
   },
@@ -43,8 +43,8 @@ const videoContent = [
     id: "2",
     title: "Education in the Post-COVID Era",
     tagline: "The Future of Learning",
-    thumbnail:
-      "https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?w=600&h=340&fit=crop",
+    thumbnail: "/datar-photo.png",
+    videoSrc: "/video-2.mp4",
     description:
       "Discussing the shift to online learning and the importance of multidisciplinary programs.",
   },
@@ -52,8 +52,8 @@ const videoContent = [
     id: "3",
     title: "The Amity Mission",
     tagline: "Vision & Values",
-    thumbnail:
-      "https://images.unsplash.com/photo-1559223607-a43c990c692c?w=600&h=340&fit=crop",
+    thumbnail: "/queen-mary-univ-photo.png",
+    videoSrc: "/video-3.mp4",
     description:
       "Addressing the student body on the topic of Nation Building through education.",
   },
@@ -272,23 +272,24 @@ export default function Gallery() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="max-w-4xl w-full glass rounded-lg p-8 text-center"
+              className="max-w-4xl w-full glass rounded-lg p-6 md:p-8"
               onClick={(e) => e.stopPropagation()}
             >
-              <Play className="w-16 h-16 text-primary mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-foreground mb-2 heading-serif">
+              <div className="aspect-video w-full overflow-hidden rounded-lg border border-white/10 bg-black">
+                <video
+                  className="h-full w-full"
+                  controls
+                  playsInline
+                  preload="metadata"
+                  src={videoContent.find((v) => v.id === selectedVideo)?.videoSrc}
+                />
+              </div>
+              <h3 className="mt-5 text-2xl font-bold text-foreground heading-serif">
                 {videoContent.find((v) => v.id === selectedVideo)?.title}
               </h3>
-              <p className="text-foreground-secondary mb-6">
-                Video content placeholder. Actual videos will be embedded here
-                once available.
+              <p className="mt-2 text-foreground-secondary">
+                {videoContent.find((v) => v.id === selectedVideo)?.description}
               </p>
-              <button
-                onClick={() => setSelectedVideo(null)}
-                className="btn-secondary"
-              >
-                Close
-              </button>
             </motion.div>
           </motion.div>
         )}

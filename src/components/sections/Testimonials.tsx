@@ -1,295 +1,216 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { Quote, ChevronLeft, ChevronRight, Star, Building2 } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
+import { motion } from "framer-motion";
+import { ChevronLeft, ChevronRight, PlayCircle } from "lucide-react";
 
-const smoothEase: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.1,
-    },
-  },
+type VideoTestimonial = {
+  id: number;
+  title: string;
+  speaker: string;
+  role: string;
+  organization: string;
+  videoSrc: string;
 };
 
-const fadeUpVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: smoothEase },
-  },
-};
-
-// Testimonials data - can be expanded or moved to content file
-const testimonials = [
+const videoTestimonials: VideoTestimonial[] = [
   {
     id: 1,
-    name: "Dr. Ashok K. Chauhan",
-    title: "Founder President",
-    organization: "Amity Education Group",
-    image: null,
-    quote:
-      "Prof. Gurinder Singh exemplifies the true spirit of academic leadership. His vision for transnational education and his tireless efforts in building institutional systems have transformed how we approach global education.",
-    rating: 5,
+    title: "Case center collaboration",
+    speaker: "Prof. (Dr.) Gurinder Singh",
+    role: "Group Vice Chancellor",
+    organization: "Amity Universities",
+    videoSrc: "/video-1.mp4",
   },
   {
     id: 2,
-    name: "Industry Leader",
-    title: "CEO",
-    organization: "Fortune 500 Company",
-    image: null,
-    quote:
-      "Working with Prof. Singh on Industry 4.0 initiatives has been transformative. His research insights and practical approach to implementing AI in business operations have created measurable impact.",
-    rating: 5,
+    title: "Institutional Collaboration Highlights at University of Southampton",
+    speaker: "Prof. (Dr.) Gurinder Singh",
+    role: "Academic Leader",
+    organization: "Global Partnerships",
+    videoSrc: "/video-2.mp4",
   },
   {
     id: 3,
-    name: "Research Collaborator",
-    title: "Professor",
-    organization: "International University",
-    image: null,
-    quote:
-      "Prof. Singh's contributions to computational intelligence and sustainable development research have been groundbreaking. His collaborative spirit and rigorous methodology make him an exceptional research partner.",
-    rating: 5,
-  },
-  {
-    id: 4,
-    name: "Former Student",
-    title: "Senior Manager",
-    organization: "Tech Corporation",
-    image: null,
-    quote:
-      "The mentorship I received from Prof. Singh shaped my entire career. His emphasis on practical application of theory and his genuine investment in student success is truly remarkable.",
-    rating: 5,
-  },
-  {
-    id: 5,
-    name: "Academic Peer",
-    title: "Department Head",
-    organization: "Global Business School",
-    image: null,
-    quote:
-      "Prof. Singh's editorial contributions and his work on assessment methodologies have set new standards in management education. His intellectual rigor combined with practical wisdom is rare.",
-    rating: 5,
+    title: "Academic and Industry Impact at University of Bristol",
+    speaker: "Prof. (Dr.) Gurinder Singh",
+    role: "Institution Builder",
+    organization: "Amity Global Network",
+    videoSrc: "/video-3.mp4",
   },
 ];
 
+const smoothEase: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
+
 export default function Testimonials() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const sectionRef = useRef<HTMLElement>(null);
+  const autoplay = useMemo(
+    () =>
+      Autoplay({
+        delay: 4500,
+        stopOnInteraction: false,
+        stopOnMouseEnter: true,
+      }),
+    []
+  );
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    {
+      loop: true,
+      align: "center",
+      skipSnaps: false,
+      dragFree: false,
+    },
+    [autoplay]
+  );
 
-  const yBg1 = useTransform(scrollYProgress, [0, 1], [0, -50]);
-  const yBg2 = useTransform(scrollYProgress, [0, 1], [0, 40]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
 
-  const goToNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-  };
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+    setCanScrollPrev(emblaApi.canScrollPrev());
+    setCanScrollNext(emblaApi.canScrollNext());
+  }, [emblaApi]);
 
-  const goToPrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  };
+  useEffect(() => {
+    if (!emblaApi) return;
 
-  const goToSlide = (index: number) => {
-    setCurrentIndex(index);
-  };
+    onSelect();
+    emblaApi.on("select", onSelect);
+    emblaApi.on("reInit", onSelect);
+
+    return () => {
+      emblaApi.off("select", onSelect);
+      emblaApi.off("reInit", onSelect);
+    };
+  }, [emblaApi, onSelect]);
+
+  const scrollPrev = useCallback(() => {
+    if (!emblaApi) return;
+    emblaApi.scrollPrev();
+  }, [emblaApi]);
+
+  const scrollNext = useCallback(() => {
+    if (!emblaApi) return;
+    emblaApi.scrollNext();
+  }, [emblaApi]);
+
+  const scrollTo = useCallback(
+    (index: number) => {
+      if (!emblaApi) return;
+      emblaApi.scrollTo(index);
+    },
+    [emblaApi]
+  );
 
   return (
-    <section
-      id="testimonials"
-      ref={sectionRef}
-      className="section-padding relative overflow-hidden"
-    >
-      {/* Background Elements */}
+    <section id="testimonials" className="section-padding relative overflow-hidden">
       <motion.div
-        style={{ y: yBg1 }}
-        className="absolute top-32 -left-48 w-[500px] h-[500px] rounded-full bg-primary/5 blur-3xl pointer-events-none"
-      />
-      <motion.div
-        style={{ y: yBg2 }}
-        className="absolute bottom-32 -right-48 w-[400px] h-[400px] rounded-full bg-gold/5 blur-3xl pointer-events-none"
+        initial={{ opacity: 0, scale: 0.9 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true, margin: "-120px" }}
+        transition={{ duration: 0.8, ease: smoothEase }}
+        className="absolute top-0 left-1/2 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl"
       />
 
-      <div className="container-custom mx-auto relative z-10">
-        {/* Section Header */}
+      <div className="container-custom relative z-10 mx-auto">
         <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          className="text-center mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-120px" }}
+          transition={{ duration: 0.7, ease: smoothEase }}
+          className="mb-12 text-center md:mb-16"
         >
-          <motion.span
-            variants={fadeUpVariants}
-            className="text-primary text-sm font-medium uppercase tracking-wider inline-block"
-          >
-            Voices of Impact
-          </motion.span>
-          <motion.h2
-            variants={fadeUpVariants}
-            className="text-3xl md:text-4xl lg:text-5xl mt-4 mb-6"
-          >
-            <span className="text-primary heading-serif">Testimonials</span>
-          </motion.h2>
-          <motion.p
-            variants={fadeUpVariants}
-            className="text-foreground-secondary max-w-3xl mx-auto text-lg"
-          >
-            Words from colleagues, collaborators, students, and industry leaders
-            who have experienced the impact of Prof. Singh&apos;s work.
-          </motion.p>
+          <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-xs font-medium uppercase tracking-[0.14em] text-primary">
+            <PlayCircle className="h-3.5 w-3.5" />
+            Real Stories
+          </span>
+          <h2 className="mt-5 text-3xl md:text-4xl lg:text-5xl">
+            Video Testimonials That Speak for Themselves
+          </h2>
+          <p className="mx-auto mt-4 max-w-3xl text-base text-foreground-secondary md:text-lg">
+            Swipe through voices from academia and industry. The carousel auto-scrolls,
+            supports touch gestures, and pauses while users interact.
+          </p>
         </motion.div>
 
-        {/* Main Testimonial Card */}
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, ease: smoothEase }}
-            className="relative"
-          >
-            {/* Quote Icon */}
-            <div className="absolute -top-6 left-8 md:left-12">
-              <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-                <Quote className="w-6 h-6 text-primary" />
-              </div>
-            </div>
-
-            {/* Testimonial Content */}
-            <div className="glass rounded-2xl p-8 md:p-12 pt-12 border border-white/10">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentIndex}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.5, ease: smoothEase }}
-                >
-                  {/* Stars */}
-                  <div className="flex gap-1 mb-6">
-                    {[...Array(testimonials[currentIndex].rating)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="w-5 h-5 text-gold fill-gold"
-                      />
-                    ))}
-                  </div>
-
-                  {/* Quote */}
-                  <blockquote className="text-lg md:text-xl text-foreground leading-relaxed mb-8">
-                    &ldquo;{testimonials[currentIndex].quote}&rdquo;
-                  </blockquote>
-
-                  {/* Author */}
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/30 to-gold/30 flex items-center justify-center">
-                      <span className="text-xl font-bold text-primary">
-                        {testimonials[currentIndex].name.charAt(0)}
-                      </span>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-foreground">
-                        {testimonials[currentIndex].name}
-                      </p>
-                      <p className="text-sm text-foreground-secondary">
-                        {testimonials[currentIndex].title}
-                      </p>
-                      <p className="text-xs text-foreground-muted flex items-center gap-1">
-                        <Building2 className="w-3 h-3" />
-                        {testimonials[currentIndex].organization}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
-
-              {/* Navigation */}
-              <div className="flex items-center justify-between mt-8 pt-6 border-t border-white/10">
-                {/* Dots */}
-                <div className="flex gap-2">
-                  {testimonials.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => goToSlide(index)}
-                      className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                        index === currentIndex
-                          ? "bg-primary w-8"
-                          : "bg-white/20 hover:bg-white/40"
-                      }`}
-                      aria-label={`Go to testimonial ${index + 1}`}
-                    />
-                  ))}
-                </div>
-
-                {/* Arrows */}
-                <div className="flex gap-2">
-                  <button
-                    onClick={goToPrev}
-                    className="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-white/10 transition-colors"
-                    aria-label="Previous testimonial"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={goToNext}
-                    className="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-white/10 transition-colors"
-                    aria-label="Next testimonial"
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Stats Row */}
         <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16"
+          transition={{ duration: 0.75, ease: smoothEase }}
+          className="relative"
         >
-          <motion.div
-            variants={fadeUpVariants}
-            className="text-center"
-          >
-            <p className="text-3xl md:text-4xl font-bold text-primary mb-1">50K+</p>
-            <p className="text-sm text-foreground-muted">Students Mentored</p>
-          </motion.div>
-          <motion.div
-            variants={fadeUpVariants}
-            className="text-center"
-          >
-            <p className="text-3xl md:text-4xl font-bold text-gold mb-1">200+</p>
-            <p className="text-sm text-foreground-muted">Industry Partners</p>
-          </motion.div>
-          <motion.div
-            variants={fadeUpVariants}
-            className="text-center"
-          >
-            <p className="text-3xl md:text-4xl font-bold text-primary mb-1">15+</p>
-            <p className="text-sm text-foreground-muted">Countries Impacted</p>
-          </motion.div>
-          <motion.div
-            variants={fadeUpVariants}
-            className="text-center"
-          >
-            <p className="text-3xl md:text-4xl font-bold text-gold mb-1">30+</p>
-            <p className="text-sm text-foreground-muted">Years of Excellence</p>
-          </motion.div>
+          <div className="overflow-hidden" ref={emblaRef}>
+            <div className="flex">
+              {videoTestimonials.map((item) => (
+                <div key={item.id} className="min-w-0 flex-[0_0_100%] px-1 md:px-3">
+                  <article className="glass overflow-hidden rounded-2xl border border-white/10">
+                    <div className="aspect-video w-full overflow-hidden border-b border-white/10 bg-black">
+                      <video
+                        className="h-full w-full"
+                        src={item.videoSrc}
+                        aria-label={`${item.speaker} testimonial video`}
+                        controls
+                        playsInline
+                        preload="metadata"
+                      />
+                    </div>
+
+                    <div className="grid gap-3 p-6 md:p-7">
+                      <h3 className="text-xl font-semibold text-foreground md:text-2xl">
+                        {item.title}
+                      </h3>
+                      <p className="text-sm text-foreground-secondary md:text-base">
+                        {item.speaker} · {item.role}
+                      </p>
+                      <p className="text-sm text-gold md:text-base">{item.organization}</p>
+                    </div>
+                  </article>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              {videoTestimonials.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => scrollTo(index)}
+                  className={`h-2.5 rounded-full transition-all duration-300 ${
+                    selectedIndex === index
+                      ? "w-8 bg-primary"
+                      : "w-2.5 bg-white/30 hover:bg-white/50"
+                  }`}
+                  aria-label={`Jump to video ${index + 1}`}
+                />
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={scrollPrev}
+                disabled={!canScrollPrev}
+                className="glass inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                aria-label="Previous video"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <button
+                onClick={scrollNext}
+                disabled={!canScrollNext}
+                className="glass inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                aria-label="Next video"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
         </motion.div>
       </div>
     </section>
